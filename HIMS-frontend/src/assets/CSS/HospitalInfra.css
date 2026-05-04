@@ -10,6 +10,20 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.infra-header-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.infra-header p {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin-top: 4px;
 }
 
 .infra-header h1 {
@@ -139,4 +153,52 @@
 .infra-empty p {
   color: var(--text-muted);
   font-size: 14px;
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .infra-page {
+    padding: 16px;
+  }
+  
+  .infra-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .infra-header-actions {
+    width: 100%;
+  }
+  
+  .infra-header-actions button {
+    flex: 1;
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .infra-tabs {
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .infra-tab-btn {
+    padding: 10px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .infra-header h1 {
+    font-size: 20px;
+  }
+  
+  .infra-header p {
+    font-size: 13px;
+  }
+  
+  .infra-grid {
+    grid-template-columns: 1fr;
+  }
 }

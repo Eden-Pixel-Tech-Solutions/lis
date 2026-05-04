@@ -11,9 +11,15 @@
 .machine-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   flex-wrap: wrap;
   gap: 16px;
+}
+
+.machine-header-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .machine-header h1 {
@@ -78,9 +84,18 @@
   border-bottom: 1px solid var(--border-light);
 }
 
+.machine-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  margin-top: 8px;
+}
+
 .machine-table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 600px; /* Ensures table doesn't squish too much */
 }
 
 .machine-table th {
@@ -134,4 +149,34 @@
   background: #fffbeb;
   color: #d97706;
   border: 1px solid #fef3c7;
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .machine-page {
+    padding: 16px;
+  }
+  
+  .machine-header h1 {
+    font-size: 20px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .machine-header-actions {
+    width: 100%;
+  }
+  
+  .machine-header-actions .btn-primary {
+    flex: 1;
+    justify-content: center;
+  }
 }

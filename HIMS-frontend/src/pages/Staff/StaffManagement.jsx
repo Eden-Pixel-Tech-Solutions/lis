@@ -3,7 +3,7 @@ import Alert from '../../components/Alert';
 import { useAlert } from '../../hooks/useAlert';
 import '../../assets/CSS/StaffManagement.css';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:7000';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://172.16.11.160:7005';
 
 const ROLES = ['Doctor', 'Receptionist', 'HR', 'Admin', 'Lab Technician'];
 
@@ -162,100 +162,113 @@ function StaffManagement() {
             </div>
           </div>
 
-          <table className="staff-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Full Name</th>
-                <th>Role</th>
-                <th>Department</th>
-                <th>Email</th>
-                <th>Joined Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr><td colSpan="6" style={{ textAlign: 'center', padding: '40px' }}>Loading staff records...</td></tr>
-              ) : filteredStaff.length > 0 ? (
-                filteredStaff.map((s) => (
-                  <tr key={s.id}>
-                    <td style={{ fontWeight: 600, color: 'var(--brand-blue)' }}>{s.staff_id}</td>
-                    <td>{s.first_name} {s.last_name}</td>
-                    <td>
-                      <span className={`role-badge role-${s.role.toLowerCase().replace(' ', '-')}`}>
-                        {s.role}
-                      </span>
-                    </td>
-                    <td>{s.department}</td>
-                    <td>{s.email}</td>
-                    <td>{new Date(s.created_at).toLocaleDateString()}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr><td colSpan="6" style={{ textAlign: 'center', padding: '40px' }}>No staff members found matching your search.</td></tr>
-              )}
-            </tbody>
-          </table>
+          <div className="staff-table-wrapper">
+            <table className="staff-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Full Name</th>
+                  <th>Role</th>
+                  <th>Department</th>
+                  <th>Email</th>
+                  <th>Joined Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr><td colSpan="6" style={{ textAlign: 'center', padding: '40px' }}>Loading staff records...</td></tr>
+                ) : filteredStaff.length > 0 ? (
+                  filteredStaff.map((s) => (
+                    <tr key={s.id}>
+                      <td style={{ fontWeight: 600, color: 'var(--brand-blue)' }}>{s.staff_id}</td>
+                      <td>{s.first_name} {s.last_name}</td>
+                      <td>
+                        <span className={`role-badge role-${s.role.toLowerCase().replace(' ', '-')}`}>
+                          {s.role}
+                        </span>
+                      </td>
+                      <td>{s.department}</td>
+                      <td>{s.email}</td>
+                      <td>{new Date(s.created_at).toLocaleDateString()}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr><td colSpan="6" style={{ textAlign: 'center', padding: '40px' }}>No staff members found matching your search.</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* Add Staff Modal */}
         {showAddModal && (
-          <div className="modal-overlay">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h3>Create New Staff Member</h3>
-                <button
-                  className="btn-ghost"
-                  style={{ border: 'none', background: 'transparent', padding: 0 }}
-                  onClick={() => setShowAddModal(false)}
-                >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <div className="sdm-overlay" onClick={() => setShowAddModal(false)}>
+            <div className="sdm-modal" onClick={e => e.stopPropagation()}>
+              <div className="sdm-header">
+                <div className="sdm-header-accent"></div>
+                <h3 className="sdm-title">Create New Staff Member</h3>
+                <button className="sdm-close" onClick={() => setShowAddModal(false)}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                   </svg>
                 </button>
               </div>
               <form onSubmit={handleAddStaff}>
-                <div className="modal-body">
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                    <div className="preg-field">
-                      <label className="preg-label">First Name</label>
-                      <input type="text" className="preg-input" name="firstName" value={formData.firstName} onChange={handleInputChange} required />
+                <div className="sdm-body">
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                    <div className="sdm-field">
+                      <label className="sdm-label">First Name <span className="sdm-required">*</span></label>
+                      <input type="text" className="sdm-input" name="firstName" value={formData.firstName} onChange={handleInputChange} required placeholder="e.g. John" />
                     </div>
-                    <div className="preg-field">
-                      <label className="preg-label">Last Name</label>
-                      <input type="text" className="preg-input" name="lastName" value={formData.lastName} onChange={handleInputChange} required />
+                    <div className="sdm-field">
+                      <label className="sdm-label">Last Name <span className="sdm-required">*</span></label>
+                      <input type="text" className="sdm-input" name="lastName" value={formData.lastName} onChange={handleInputChange} required placeholder="e.g. Doe" />
                     </div>
                   </div>
-                  <div className="preg-field">
-                    <label className="preg-label">Staff ID (Manual/Auto)</label>
-                    <input type="text" className="preg-input" name="staffId" value={formData.staffId} onChange={handleInputChange} required />
+                  
+                  <div className="sdm-field">
+                    <label className="sdm-label">Staff ID (Manual/Auto) <span className="sdm-required">*</span></label>
+                    <input type="text" className="sdm-input" name="staffId" value={formData.staffId} onChange={handleInputChange} required />
                   </div>
-                  <div className="preg-field">
-                    <label className="preg-label">Official Email</label>
-                    <input type="email" className="preg-input" name="email" value={formData.email} onChange={handleInputChange} required />
+
+                  <div className="sdm-field">
+                    <label className="sdm-label">Official Email <span className="sdm-required">*</span></label>
+                    <div className="sdm-input-icon">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+                      </svg>
+                      <input type="email" className="sdm-input sdm-input-padded" name="email" value={formData.email} onChange={handleInputChange} required placeholder="john.doe@hospital.com" />
+                    </div>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                    <div className="preg-field">
-                      <label className="preg-label">Designation / Role</label>
-                      <select className="preg-select" name="role" value={formData.role} onChange={handleInputChange}>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                    <div className="sdm-field">
+                      <label className="sdm-label">Designation / Role <span className="sdm-required">*</span></label>
+                      <select className="sdm-input" name="role" value={formData.role} onChange={handleInputChange}>
                         {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
                       </select>
                     </div>
-                    <div className="preg-field">
-                      <label className="preg-label">Department</label>
-                      <select className="preg-select" name="department" value={formData.department} onChange={handleInputChange}>
+                    <div className="sdm-field">
+                      <label className="sdm-label">Department <span className="sdm-required">*</span></label>
+                      <select className="sdm-input" name="department" value={formData.department} onChange={handleInputChange}>
                         {departments.map(d => <option key={d} value={d}>{d}</option>)}
                       </select>
                     </div>
                   </div>
-                  <div className="preg-field">
-                    <label className="preg-label">Initial Password</label>
-                    <input type="text" className="preg-input" name="password" value={formData.password} onChange={handleInputChange} required />
+
+                  <div className="sdm-field">
+                    <label className="sdm-label">Initial Password <span className="sdm-required">*</span></label>
+                    <input type="text" className="sdm-input" name="password" value={formData.password} onChange={handleInputChange} required />
                   </div>
                 </div>
-                <div className="modal-footer">
-                  <button type="button" className="btn-ghost" onClick={() => setShowAddModal(false)}>Cancel</button>
-                  <button type="submit" className="btn-primary">Register Staff</button>
+                <div className="sdm-footer">
+                  <button type="button" className="sdm-btn-cancel" onClick={() => setShowAddModal(false)}>Cancel</button>
+                  <button type="submit" className="sdm-btn-submit">
+                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                     </svg>
+                     Register Staff
+                  </button>
                 </div>
               </form>
             </div>

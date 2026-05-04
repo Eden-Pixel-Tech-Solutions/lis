@@ -5,7 +5,7 @@ import Select from 'react-select';
 import { fetchWithBranchContext, appendBranchContext } from '../../utils/branchContext';
 import '../../assets/CSS/InventoryVendors.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:7005';
+const API_URL = import.meta.env.VITE_API_URL || 'http://172.16.11.160:7005';
 
 function InventoryStockManagement() {
   const { alert, showAlert, hideAlert } = useAlert();
@@ -202,15 +202,14 @@ function InventoryStockManagement() {
       {alert && <Alert type={alert.type} message={alert.message} onClose={hideAlert} />}
       
       <div className="inv-header">
-        <div>
+        <div className="inv-header-content">
           <h1 className="inv-title">Batch & Stock Management</h1>
           <p className="inv-subtitle">Track multiple batches, expiry dates, and current stock</p>
         </div>
-        <div style={{ display: 'flex', gap: '10px' }}>
+        <div className="inv-header-actions">
           <button 
-            className="btn-primary" 
+            className="btn-primary export-btn" 
             onClick={handleExportCSV}
-            style={{ background: '#10b981', borderColor: '#10b981' }}
           >
             📥 Export CSV
           </button>
@@ -262,67 +261,69 @@ function InventoryStockManagement() {
           </div>
         </div>
 
-        <table className="inv-table">
-          <thead>
-            <tr>
-              <th>Item Details</th>
-              <th>Branch / Location</th>
-              <th>Batch Number</th>
-              <th>Supplier</th>
-              <th>Expiry Date</th>
-              <th>Stock Quantity</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr><td colSpan="7" style={{textAlign: 'center'}}>Loading batches...</td></tr>
-            ) : batches.length === 0 ? (
-              <tr><td colSpan="7" style={{textAlign: 'center'}}>No batches found.</td></tr>
-            ) : (
-              batches.map(batch => (
-                <tr key={batch.id}>
-                  <td>
-                    <div style={{fontWeight: 600, color: 'var(--text-dark)'}}>{batch.item_name}</div>
-                    <div style={{fontSize: '12px', color: 'var(--text-soft)'}}>{batch.item_code} • {batch.category}</div>
-                  </td>
-                  <td>
-                    <span style={{background: '#f1f5f9', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 600, color: '#475569'}}>
-                      {batch.branch_name || 'Main'}
-                    </span>
-                  </td>
-                  <td><strong>{batch.batch_number}</strong></td>
-                  <td>{batch.vendor_name || '-'}</td>
-                  <td>
-                    <div style={{
-                      color: batch.status === 'Expired' ? '#dc2626' : 'var(--text-dark)',
-                      fontWeight: batch.status === 'Expired' ? 600 : 400
-                    }}>
-                      {batch.expiry_date ? new Date(batch.expiry_date).toLocaleDateString() : 'N/A'}
-                    </div>
-                  </td>
-                  <td>
-                    <div style={{fontSize: '16px', fontWeight: 600}}>{batch.quantity_available} <span style={{fontSize: '12px', fontWeight: 400}}>{batch.unit}</span></div>
-                  </td>
-                  <td>
-                    <span className={`inv-badge ${batch.status.toLowerCase()}`}>
-                      {batch.status}
-                    </span>
-                  </td>
-                  <td>
-                    <button className="action-btn" onClick={() => handleEdit(batch)} title="Edit">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                    </button>
-                    <button className="action-btn" onClick={() => handleDelete(batch.id)} title="Delete" style={{marginLeft: '8px'}}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+        <div className="inv-table-wrapper">
+          <table className="inv-table">
+            <thead>
+              <tr>
+                <th>Item Details</th>
+                <th>Branch / Location</th>
+                <th>Batch Number</th>
+                <th>Supplier</th>
+                <th>Expiry Date</th>
+                <th>Stock Quantity</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr><td colSpan="8" style={{textAlign: 'center'}}>Loading batches...</td></tr>
+              ) : batches.length === 0 ? (
+                <tr><td colSpan="8" style={{textAlign: 'center'}}>No batches found.</td></tr>
+              ) : (
+                batches.map(batch => (
+                  <tr key={batch.id}>
+                    <td>
+                      <div style={{fontWeight: 600, color: 'var(--text-dark)'}}>{batch.item_name}</div>
+                      <div style={{fontSize: '12px', color: 'var(--text-soft)'}}>{batch.item_code} • {batch.category}</div>
+                    </td>
+                    <td>
+                      <span style={{background: '#f1f5f9', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 600, color: '#475569'}}>
+                        {batch.branch_name || 'Main'}
+                      </span>
+                    </td>
+                    <td><strong>{batch.batch_number}</strong></td>
+                    <td>{batch.vendor_name || '-'}</td>
+                    <td>
+                      <div style={{
+                        color: batch.status === 'Expired' ? '#dc2626' : 'var(--text-dark)',
+                        fontWeight: batch.status === 'Expired' ? 600 : 400
+                      }}>
+                        {batch.expiry_date ? new Date(batch.expiry_date).toLocaleDateString() : 'N/A'}
+                      </div>
+                    </td>
+                    <td>
+                      <div style={{fontSize: '16px', fontWeight: 600}}>{batch.quantity_available} <span style={{fontSize: '12px', fontWeight: 400}}>{batch.unit}</span></div>
+                    </td>
+                    <td>
+                      <span className={`inv-badge ${batch.status.toLowerCase()}`}>
+                        {batch.status}
+                      </span>
+                    </td>
+                    <td>
+                      <button className="action-btn" onClick={() => handleEdit(batch)} title="Edit">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                      </button>
+                      <button className="action-btn" onClick={() => handleDelete(batch.id)} title="Delete" style={{marginLeft: '8px'}}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Sliding Drawer Modal */}

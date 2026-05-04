@@ -7,17 +7,51 @@
 /* Header */
 .worklist-header {
   margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
 .worklist-header h1 {
   font-size: 24px;
   color: #1e293b;
-  margin-bottom: 8px;
+  margin: 0 0 4px 0;
 }
 
 .worklist-header p {
   color: #64748b;
   font-size: 14px;
+  margin: 0;
+}
+
+.branch-selector-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+
+.branch-selector-wrapper label {
+  font-weight: 600;
+  color: #475569;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.branch-select {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  background: #f8fafc;
+  outline: none;
+  min-width: 160px;
 }
 
 /* Department Section */
@@ -88,6 +122,8 @@
   padding: 16px 20px;
   background: #f9fafb;
   border-bottom: 1px solid #e5e7eb;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .worklist-header-bar h3 {
@@ -107,18 +143,50 @@
   font-weight: 500;
 }
 
+.worklist-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.worklist-actions button,
+.refresh-btn,
+.tv-mode-btn {
+  flex: 1;
+  min-width: 160px;
+}
+
 .refresh-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 24px;
   background: white;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 10px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 600;
   color: #374151;
   transition: all 0.2s ease;
+  height: 48px;
+}
+
+.tv-mode-btn {
+  background: #10b981 !important;
+  border-color: #10b981 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 24px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  height: 48px;
+  color: white !important;
 }
 
 .refresh-btn:hover {
@@ -156,6 +224,7 @@
 .worklist-table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 1000px; /* Force scroll on small screens */
 }
 
 .worklist-table th {
@@ -168,6 +237,7 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
 }
 
 .worklist-table td {
@@ -498,6 +568,164 @@ tr.flag-high {
 
 tr.flag-critical {
   background: #fee2e2;
+}
+
+/* Now Serving Banner */
+.now-serving-banner {
+  background: linear-gradient(135deg, #1a6fd4 0%, #3b82f6 100%);
+  color: white;
+  padding: 24px;
+  border-radius: 16px;
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.now-serving-info h2 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  opacity: 0.9;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.now-serving-patient {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.token-badge {
+  font-size: 32px;
+  font-weight: 800;
+}
+
+.patient-name-large {
+  font-size: 24px;
+  font-weight: 500;
+  opacity: 0.95;
+}
+
+.total-pending-box {
+  text-align: right;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px 20px;
+  border-radius: 12px;
+  backdrop-filter: blur(4px);
+}
+
+.pending-label {
+  font-size: 12px;
+  opacity: 0.8;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.pending-count {
+  font-size: 28px;
+  font-weight: 800;
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .department-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .lab-worklist-page {
+    padding: 16px;
+  }
+  
+  .worklist-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .worklist-header-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .worklist-actions {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .worklist-actions button,
+  .worklist-actions .refresh-btn,
+  .worklist-actions .tv-mode-btn {
+    width: 100% !important;
+    flex: none;
+  }
+  
+  .branch-selector-wrapper {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .now-serving-banner {
+    padding: 20px;
+  }
+  
+  .token-badge {
+    font-size: 28px;
+  }
+  
+  .patient-name-large {
+    font-size: 20px;
+  }
+  
+  .total-pending-box {
+    text-align: left;
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .department-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .worklist-header-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .worklist-header-bar .btn-primary,
+  .worklist-header-bar .refresh-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .department-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .token-badge {
+    font-size: 24px;
+  }
+  
+  .patient-name-large {
+    font-size: 18px;
+  }
+  
+  .modal-content, .results-modal {
+    width: 95%;
+    padding: 16px;
+  }
 }
 
 /* Print Media Query for Browser Print */

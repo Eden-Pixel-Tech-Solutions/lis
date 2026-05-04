@@ -41,7 +41,7 @@ function Login() {
     }
     setLoading(true);
     try {
-      const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:7000';
+      const API_BASE = import.meta.env.VITE_API_URL || 'http://172.16.11.160:7005';
       const response = await fetch(`${API_BASE}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

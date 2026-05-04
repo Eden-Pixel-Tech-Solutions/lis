@@ -5,7 +5,7 @@ import { ScheduleDutyModal } from './ScheduleDutyModal';   // ← new modal
 import '../../assets/CSS/DutyScheduler.css';
 import '../../assets/CSS/ScheduleDutyModal.css';                          // ← new styles
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:7000';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://172.16.11.160:7005';
 
 const DutyScheduler = () => {
   const { alert, showAlert, hideAlert } = useAlert();
@@ -182,34 +182,34 @@ const DutyScheduler = () => {
             <div className="filter-row">
               <div className="filter-item">
                 <label>Personnel</label>
-                <select className="preg-input filter-input" value={filters.doctorId}
+                <select className="preg-input filter-input" value={filters.doctorId} required
                   onChange={e => setFilters(f => ({ ...f, doctorId: e.target.value }))}>
-                  <option value="">All Personnel</option>
+                  <option value="">Select Personnel</option>
                   {personnel.map(d => <option key={d.id} value={d.id}>{d.first_name} {d.last_name} ({d.role})</option>)}
                 </select>
               </div>
               <div className="filter-item">
                 <label>Block</label>
-                <select className="preg-input filter-input" value={filters.block}
+                <select className="preg-input filter-input" value={filters.block} required
                   onChange={e => setFilters(f => ({ ...f, block: e.target.value }))}>
-                  <option value="">All Blocks</option>
+                  <option value="">Select Block</option>
                   {blocks.map(b => <option key={b} value={b}>{b}</option>)}
                 </select>
               </div>
               <div className="filter-item">
                 <label>Laboratory</label>
-                <select className="preg-input filter-input" value={filters.roomId}
+                <select className="preg-input filter-input" value={filters.roomId} required
                   onChange={e => setFilters(f => ({ ...f, roomId: e.target.value }))}>
-                  <option value="">All Labs</option>
+                  <option value="">Select Laboratory</option>
                   {labs.filter(r => !filters.block || r.block === filters.block)
                     .map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
                 </select>
               </div>
               <div className="filter-item">
                 <label>Status</label>
-                <select className="preg-input filter-input" value={filters.status}
+                <select className="preg-input filter-input" value={filters.status} required
                   onChange={e => setFilters(f => ({ ...f, status: e.target.value }))}>
-                  <option value="">All Statuses</option>
+                  <option value="">Select Status</option>
                   {['Scheduled', 'Ongoing', 'Completed', 'Cancelled'].map(s =>
                     <option key={s} value={s}>{s}</option>)}
                 </select>
@@ -226,50 +226,52 @@ const DutyScheduler = () => {
             </div>
           </div>
 
-          <table className="staff-table">
-            <thead>
-              <tr>
-                <th>Personnel</th><th>Laboratory Assignment</th><th>Date</th>
-                <th>Time Slot</th><th>Status</th><th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr><td colSpan="6" style={{ textAlign: 'center', padding: 40 }}>Loading lab schedules…</td></tr>
-              ) : filteredSchedules.length > 0 ? filteredSchedules.map(s => (
-                <tr key={s.id}>
-                  <td>
-                    <div style={{ fontWeight: 600, color: 'var(--brand-blue)' }}>{s.doctor_first_name} {s.doctor_last_name}</div>
-                    <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{s.staff_id}</div>
-                  </td>
-                  <td>
-                    <span className="room-badge">{s.room_name}</span>
-                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>{s.block || 'Main Laboratory'}</div>
-                  </td>
-                  <td>
-                    <div style={{ fontWeight: 500 }}>{new Date(s.duty_date).toLocaleDateString()}</div>
-                    {new Date(s.duty_date) < today && <span style={{ fontSize: 10, color: '#ef4444' }}>History</span>}
-                  </td>
-                  <td>{s.start_time.substring(0, 5)} – {s.end_time.substring(0, 5)}</td>
-                  <td>
-                    <span className={`status-badge status-${s.status?.toLowerCase() || 'scheduled'}`}>
-                      {s.status || 'Scheduled'}
-                    </span>
-                  </td>
-                  <td>
-                    <button className="btn-icon-delete" onClick={() => handleDelete(s.id)} title="Delete">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polyline points="3 6 5 6 21 6" />
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                      </svg>
-                    </button>
-                  </td>
+          <div className="staff-table-wrapper">
+            <table className="staff-table">
+              <thead>
+                <tr>
+                  <th>Personnel</th><th>Laboratory Assignment</th><th>Date</th>
+                  <th>Time Slot</th><th>Status</th><th>Action</th>
                 </tr>
-              )) : (
-                <tr><td colSpan="6" style={{ textAlign: 'center', padding: 40 }}>No duty schedules found.</td></tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr><td colSpan="6" style={{ textAlign: 'center', padding: 40 }}>Loading lab schedules…</td></tr>
+                ) : filteredSchedules.length > 0 ? filteredSchedules.map(s => (
+                  <tr key={s.id}>
+                    <td>
+                      <div style={{ fontWeight: 600, color: 'var(--brand-blue)' }}>{s.doctor_first_name} {s.doctor_last_name}</div>
+                      <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{s.staff_id}</div>
+                    </td>
+                    <td>
+                      <span className="room-badge">{s.room_name}</span>
+                      <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>{s.block || 'Main Laboratory'}</div>
+                    </td>
+                    <td>
+                      <div style={{ fontWeight: 500 }}>{new Date(s.duty_date).toLocaleDateString()}</div>
+                      {new Date(s.duty_date) < today && <span style={{ fontSize: 10, color: '#ef4444' }}>History</span>}
+                    </td>
+                    <td>{s.start_time.substring(0, 5)} – {s.end_time.substring(0, 5)}</td>
+                    <td>
+                      <span className={`status-badge status-${s.status?.toLowerCase() || 'scheduled'}`}>
+                        {s.status || 'Scheduled'}
+                      </span>
+                    </td>
+                    <td>
+                      <button className="btn-icon-delete" onClick={() => handleDelete(s.id)} title="Delete">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <polyline points="3 6 5 6 21 6" />
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                )) : (
+                  <tr><td colSpan="6" style={{ textAlign: 'center', padding: 40 }}>No duty schedules found.</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 

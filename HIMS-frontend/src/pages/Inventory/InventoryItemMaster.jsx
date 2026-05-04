@@ -3,7 +3,7 @@ import Alert from '../../components/Alert';
 import { useAlert } from '../../hooks/useAlert';
 import '../../assets/CSS/InventoryVendors.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:7005';
+const API_URL = import.meta.env.VITE_API_URL || 'http://172.16.11.160:7005';
 
 function InventoryItemMaster() {
   const { alert, showAlert, hideAlert } = useAlert();
@@ -183,15 +183,14 @@ function InventoryItemMaster() {
       {alert && <Alert type={alert.type} message={alert.message} onClose={hideAlert} />}
       
       <div className="inv-header">
-        <div>
+        <div className="inv-title-box">
           <h1 className="inv-title">Item Master Catalog</h1>
           <p className="inv-subtitle">Manage hospital consumables, reagents, and equipment</p>
         </div>
-        <div style={{ display: 'flex', gap: '10px' }}>
+        <div className="inv-header-actions">
           <button 
-            className="btn-primary" 
+            className="btn-primary export-btn" 
             onClick={handleExportCSV}
-            style={{ background: '#10b981', borderColor: '#10b981' }}
           >
             📥 Export CSV
           </button>
@@ -228,85 +227,87 @@ function InventoryItemMaster() {
           </select>
         </div>
 
-        <table className="inv-table">
-          <thead>
-            <tr>
-              <th>Item Code</th>
-              <th>Item Name</th>
-              <th>Category</th>
-              <th>Unit</th>
-              <th>Default Vendor</th>
-              <th>Price</th>
-              <th>Lead Time</th>
-              <th>Min Stock</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr><td colSpan="12" style={{textAlign: 'center'}}>Loading items...</td></tr>
-            ) : items.length === 0 ? (
-              <tr><td colSpan="12" style={{textAlign: 'center'}}>No items found.</td></tr>
-            ) : (
-              items.map(item => (
-                <tr key={item.id}>
-                  <td><strong>{item.item_code}</strong></td>
-                  <td style={{fontWeight: 600, color: 'var(--text-dark)'}}>{item.item_name}</td>
-                  <td>
-                    <span style={{
-                      padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 600,
-                      background: item.category === 'Reagent' ? '#e0e7ff' : item.category === 'Equipment' ? '#fce7f3' : '#f1f5f9',
-                      color: item.category === 'Reagent' ? '#4338ca' : item.category === 'Equipment' ? '#be185d' : '#475569'
-                    }}>
-                      {item.category}
-                    </span>
-                  </td>
-                  <td>{item.unit}</td>
-                  <td>
-                    {item.default_vendor_name ? (
-                      <span style={{color: 'var(--text-dark)', fontWeight: 500}}>
-                        {item.default_vendor_name}
+        <div className="inv-table-wrapper">
+          <table className="inv-table">
+            <thead>
+              <tr>
+                <th>Item Code</th>
+                <th>Item Name</th>
+                <th>Category</th>
+                <th>Unit</th>
+                <th>Default Vendor</th>
+                <th>Price</th>
+                <th>Lead Time</th>
+                <th>Min Stock</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr><td colSpan="12" style={{textAlign: 'center'}}>Loading items...</td></tr>
+              ) : items.length === 0 ? (
+                <tr><td colSpan="12" style={{textAlign: 'center'}}>No items found.</td></tr>
+              ) : (
+                items.map(item => (
+                  <tr key={item.id}>
+                    <td><strong>{item.item_code}</strong></td>
+                    <td style={{fontWeight: 600, color: 'var(--text-dark)'}}>{item.item_name}</td>
+                    <td>
+                      <span style={{
+                        padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 600,
+                        background: item.category === 'Reagent' ? '#e0e7ff' : item.category === 'Equipment' ? '#fce7f3' : '#f1f5f9',
+                        color: item.category === 'Reagent' ? '#4338ca' : item.category === 'Equipment' ? '#be185d' : '#475569'
+                      }}>
+                        {item.category}
                       </span>
-                    ) : (
-                      <span style={{color: 'var(--text-soft)', fontStyle: 'italic', fontSize: '12px'}}>
-                        Not Assigned
+                    </td>
+                    <td>{item.unit}</td>
+                    <td>
+                      {item.default_vendor_name ? (
+                        <span style={{color: 'var(--text-dark)', fontWeight: 500}}>
+                          {item.default_vendor_name}
+                        </span>
+                      ) : (
+                        <span style={{color: 'var(--text-soft)', fontStyle: 'italic', fontSize: '12px'}}>
+                          Not Assigned
+                        </span>
+                      )}
+                    </td>
+                    <td style={{fontWeight: 600, color: 'var(--text-dark)'}}>
+                      ₹{parseFloat(item.unit_price || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}
+                    </td>
+                    <td>
+                      <span style={{
+                        padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 600,
+                        background: '#fef3c7', color: '#92400e'
+                      }}>
+                        {item.delivery_lead_time_days} Days
                       </span>
-                    )}
-                  </td>
-                  <td style={{fontWeight: 600, color: 'var(--text-dark)'}}>
-                    ₹{parseFloat(item.unit_price || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}
-                  </td>
-                  <td>
-                    <span style={{
-                      padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 600,
-                      background: '#fef3c7', color: '#92400e'
-                    }}>
-                      {item.delivery_lead_time_days} Days
-                    </span>
-                  </td>
-                  <td>
-                    <div style={{color: 'var(--text-dark)'}}>{item.min_stock_level} {item.unit}</div>
-                    <div style={{fontSize: '11px', color: 'var(--text-soft)'}}>Reorder at: {item.reorder_level}</div>
-                  </td>
-                  <td>
-                    <span className={`inv-badge ${item.status.toLowerCase()}`}>
-                      {item.status}
-                    </span>
-                  </td>
-                  <td>
-                    <button className="action-btn" onClick={() => handleEdit(item)} title="Edit">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                    </button>
-                    <button className="action-btn" onClick={() => handleDelete(item.id)} title="Delete" style={{marginLeft: '8px'}}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+                    </td>
+                    <td>
+                      <div style={{color: 'var(--text-dark)'}}>{item.min_stock_level} {item.unit}</div>
+                      <div style={{fontSize: '11px', color: 'var(--text-soft)'}}>Reorder at: {item.reorder_level}</div>
+                    </td>
+                    <td>
+                      <span className={`inv-badge ${item.status.toLowerCase()}`}>
+                        {item.status}
+                      </span>
+                    </td>
+                    <td>
+                      <button className="action-btn" onClick={() => handleEdit(item)} title="Edit">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                      </button>
+                      <button className="action-btn" onClick={() => handleDelete(item.id)} title="Delete" style={{marginLeft: '8px'}}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Sliding Drawer Modal */}

@@ -25,11 +25,11 @@ export const getBranchContext = () => {
 export const buildBranchQueryString = () => {
   const { role_level, branch_id, district_id } = getBranchContext();
   const params = new URLSearchParams();
-  
+
   if (branch_id) params.append('branch_id', branch_id);
   if (role_level) params.append('role_level', role_level);
   if (district_id && role_level === 'Sub-Central') params.append('district_id', district_id);
-  
+
   const queryString = params.toString();
   return queryString ? `?${queryString}` : '';
 };
@@ -41,14 +41,14 @@ export const buildBranchQueryString = () => {
  */
 export const appendBranchContext = (baseUrl) => {
   const { role_level, branch_id, district_id } = getBranchContext();
-  
+
   const separator = baseUrl.includes('?') ? '&' : '?';
   const params = new URLSearchParams();
-  
+
   if (branch_id) params.append('branch_id', branch_id);
   if (role_level) params.append('role_level', role_level);
   if (district_id && role_level === 'Sub-Central') params.append('district_id', district_id);
-  
+
   const queryString = params.toString();
   return queryString ? `${baseUrl}${separator}${queryString}` : baseUrl;
 };
@@ -60,12 +60,12 @@ export const appendBranchContext = (baseUrl) => {
  * @returns {Promise} Fetch promise
  */
 export const fetchWithBranchContext = async (url, options = {}) => {
-  const API = import.meta.env.VITE_API_URL || 'http://localhost:7005';
+  const API = import.meta.env.VITE_API_URL || 'http://172.16.11.160:7005';
   const token = localStorage.getItem('hims_token');
-  
+
   const urlWithContext = appendBranchContext(url);
   const fullUrl = url.startsWith('http') ? urlWithContext : `${API}${urlWithContext}`;
-  
+
   const fetchOptions = {
     ...options,
     headers: {
@@ -74,13 +74,13 @@ export const fetchWithBranchContext = async (url, options = {}) => {
       ...options.headers
     }
   };
-  
+
   const response = await fetch(fullUrl, fetchOptions);
-  
+
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
-  
+
   return response.json();
 };
 
@@ -95,7 +95,7 @@ export const fetchWithBranchContext = async (url, options = {}) => {
  */
 export const canAccessBranch = (targetBranchId) => {
   const { role_level, branch_id, district_id } = getBranchContext();
-  
+
   if (role_level === 'Central') return true;
   if (role_level === 'Branch') return branch_id?.toString() === targetBranchId?.toString();
   // Sub-Central would need district check via API
@@ -108,12 +108,12 @@ export const canAccessBranch = (targetBranchId) => {
  */
 export const getBranchLabel = () => {
   const { role_level, hospital_code } = getBranchContext();
-  
+
   const roleLabels = {
     'Central': 'State Level',
     'Sub-Central': 'District Level',
     'Branch': hospital_code || 'Branch'
   };
-  
+
   return roleLabels[role_level] || 'Branch';
 };

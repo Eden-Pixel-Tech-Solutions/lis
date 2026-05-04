@@ -6,7 +6,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import '../../assets/CSS/InventoryVendors.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:7005';
+const API_URL = import.meta.env.VITE_API_URL || 'http://172.16.11.160:7005';
 
 function PurchaseManagement() {
   const { alert, showAlert, hideAlert } = useAlert();
@@ -302,8 +302,8 @@ function PurchaseManagement() {
         {/* REQUISITIONS TAB */}
         {activeTab === 'requisitions' && (
           <div>
-            <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '16px'}}>
-              <h3 style={{margin: 0}}>Purchase Requisitions (From Labs)</h3>
+            <div className="section-header">
+              <h3 className="section-title">Purchase Requisitions (From Labs)</h3>
               <button className="btn-primary" onClick={() => setIsPRModalOpen(true)}>+ Create PR</button>
             </div>
             <table className="inv-table">
@@ -346,8 +346,8 @@ function PurchaseManagement() {
         {/* ORDERS TAB */}
         {activeTab === 'orders' && (
           <div>
-            <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '16px'}}>
-              <h3 style={{margin: 0}}>Purchase Orders (To Vendors)</h3>
+            <div className="section-header">
+              <h3 className="section-title">Purchase Orders (To Vendors)</h3>
               <button className="btn-primary" onClick={() => { setPoForm({ vendor_id: '', expected_delivery_date: '', items: [{ item_id: '', quantity: '', unit_price: '' }], pr_id: null }); setIsPOModalOpen(true); }}>+ Create Direct PO</button>
             </div>
             <table className="inv-table">
@@ -389,12 +389,12 @@ function PurchaseManagement() {
         {/* SUGGESTIONS TAB */}
         {activeTab === 'suggestions' && (
           <div>
-            <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '16px'}}>
-              <div>
-                <h3 style={{margin: 0}}>AI Purchase Suggestions</h3>
-                <p style={{fontSize: '12px', color: 'var(--text-soft)', margin: 0}}>Based on ADU and Lead Times.</p>
+            <div className="section-header">
+              <div className="section-title-box">
+                <h3 className="section-title">AI Purchase Suggestions</h3>
+                <p className="section-subtitle">Based on ADU and Lead Times.</p>
               </div>
-              <button className="btn-primary" onClick={generateAI} disabled={loading} style={{background:'#10b981'}}>🔮 Run AI Scan</button>
+              <button className="btn-primary ai-btn" onClick={generateAI} disabled={loading}>🔮 Run AI Scan</button>
             </div>
             <table className="inv-table">
               <thead><tr><th>Item Details</th><th>Preferred Vendor</th><th>Suggested Qty</th><th>Estimated Cost</th><th>Status</th></tr></thead>

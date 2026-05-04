@@ -5,7 +5,7 @@ import Select from 'react-select';
 import { fetchWithBranchContext, appendBranchContext } from '../../utils/branchContext';
 import '../../assets/CSS/InventoryVendors.css'; // Reusing glassmorphic CSS
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:7005';
+const API_URL = import.meta.env.VITE_API_URL || 'http://172.16.11.160:7005';
 
 function InventoryTransfers() {
   const { alert, showAlert, hideAlert } = useAlert();
@@ -240,114 +240,188 @@ function InventoryTransfers() {
         </table>
       </div>
 
-      {/* Sliding Drawer Modal */}
+      {/* Premium Centered Modal */}
       {isDrawerOpen && (
-        <div className="inv-modal-overlay" onClick={() => setIsDrawerOpen(false)}>
-          <div className="inv-drawer" style={{ width: '800px', maxWidth: '90vw' }} onClick={e => e.stopPropagation()}>
-            <div className="inv-drawer-header">
-              <h2>New Stock Transfer Request</h2>
-              <button className="inv-drawer-close" onClick={() => setIsDrawerOpen(false)}>&times;</button>
+        <div className="sdm-overlay" onClick={() => setIsDrawerOpen(false)}>
+          <div 
+            className="sdm-modal" 
+            style={{ maxWidth: '850px' }} 
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="sdm-header">
+              <div className="sdm-header-accent"></div>
+              <h2 className="sdm-title">New Stock Transfer Request</h2>
+              <button className="sdm-close" onClick={() => setIsDrawerOpen(false)}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </button>
             </div>
-            <div className="inv-drawer-body">
-              <form id="transfer-form" onSubmit={handleSubmit}>
-                
-                <h4 style={{marginBottom: '12px', color: 'var(--text-dark)'}}>Routing Information</h4>
-                <div className="inv-grid-2">
-                  <div className="inv-form-group">
-                    <label>Source Branch (From) *</label>
-                    <Select
-                      options={branches.map(b => ({ value: b.id, label: b.name }))}
-                      value={formData.from_branch_id ? { value: formData.from_branch_id, label: branches.find(b => b.id === formData.from_branch_id)?.name } : null}
-                      onChange={(selected) => {
-                        setFormData({...formData, from_branch_id: selected ? selected.value : '', items: [{ item_id: '', batch_id: '', quantity: '' }]});
-                      }}
-                      required
-                      styles={selectStyles}
-                    />
-                  </div>
 
-                  <div className="inv-form-group">
-                    <label>Destination Branch (To) *</label>
-                    <Select
-                      options={branches.filter(b => b.id !== formData.from_branch_id).map(b => ({ value: b.id, label: b.name }))}
-                      value={formData.to_branch_id ? { value: formData.to_branch_id, label: branches.find(b => b.id === formData.to_branch_id)?.name } : null}
-                      onChange={(selected) => setFormData({...formData, to_branch_id: selected ? selected.value : ''})}
-                      required
-                      styles={selectStyles}
-                    />
+            <div className="sdm-body">
+              <form id="transfer-form" onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                
+                <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                  <h4 style={{ marginBottom: '14px', fontSize: '13px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    Routing Information
+                  </h4>
+                  <div className="inv-grid-2">
+                    <div className="sdm-field">
+                      <label className="sdm-label">Source Branch (From) <span className="sdm-required">*</span></label>
+                      <Select
+                        options={branches.map(b => ({ value: b.id, label: b.name }))}
+                        value={formData.from_branch_id ? { value: formData.from_branch_id, label: branches.find(b => b.id === formData.from_branch_id)?.name } : null}
+                        onChange={(selected) => {
+                          setFormData({...formData, from_branch_id: selected ? selected.value : '', items: [{ item_id: '', batch_id: '', quantity: '' }]});
+                        }}
+                        required
+                        styles={selectStyles}
+                      />
+                    </div>
+
+                    <div className="sdm-field">
+                      <label className="sdm-label">Destination Branch (To) <span className="sdm-required">*</span></label>
+                      <Select
+                        options={branches.filter(b => b.id !== formData.from_branch_id).map(b => ({ value: b.id, label: b.name }))}
+                        value={formData.to_branch_id ? { value: formData.to_branch_id, label: branches.find(b => b.id === formData.to_branch_id)?.name } : null}
+                        onChange={(selected) => setFormData({...formData, to_branch_id: selected ? selected.value : ''})}
+                        required
+                        styles={selectStyles}
+                      />
+                    </div>
                   </div>
                 </div>
 
-                <h4 style={{marginTop: '24px', marginBottom: '12px', color: 'var(--text-dark)'}}>Transfer Items</h4>
-                <table className="inv-table" style={{ marginBottom: '10px' }}>
-                  <thead>
-                    <tr>
-                      <th style={{ width: '35%' }}>Item</th>
-                      <th style={{ width: '40%' }}>FIFO Batch (Available Qty)</th>
-                      <th style={{ width: '15%' }}>Qty to Transfer</th>
-                      <th style={{ width: '10%' }}></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {formData.items.map((lineItem, index) => {
-                      const availableBatches = batches.filter(b => b.item_id === lineItem.item_id && b.branch_id === formData.from_branch_id && b.status === 'Active');
-                      return (
-                        <tr key={index}>
-                          <td>
-                            <Select
-                              options={items.map(i => ({ value: i.id, label: i.item_name }))}
-                              value={lineItem.item_id ? { value: lineItem.item_id, label: items.find(i => i.id === lineItem.item_id)?.item_name } : null}
-                              onChange={(selected) => updateLineItem(index, 'item_id', selected ? selected.value : '')}
-                              required
-                              styles={selectStyles}
-                              isDisabled={!formData.from_branch_id}
-                            />
-                          </td>
-                          <td>
-                            <Select
-                              options={availableBatches.map(b => ({ value: b.id, label: `${b.batch_number} (Qty: ${b.quantity_available})` }))}
-                              value={lineItem.batch_id ? { value: lineItem.batch_id, label: availableBatches.find(b => b.id === lineItem.batch_id)?.batch_number + ' (Qty: ' + availableBatches.find(b => b.id === lineItem.batch_id)?.quantity_available + ')' } : null}
-                              onChange={(selected) => updateLineItem(index, 'batch_id', selected ? selected.value : '')}
-                              required
-                              styles={selectStyles}
-                              isDisabled={!lineItem.item_id}
-                              placeholder="Select Batch..."
-                            />
-                          </td>
-                          <td>
-                            <input 
-                              type="number" 
-                              className="inv-input" 
-                              min="1" 
-                              required 
-                              value={lineItem.quantity} 
-                              onChange={(e) => updateLineItem(index, 'quantity', parseInt(e.target.value) || '')} 
-                            />
-                          </td>
-                          <td>
-                            <button type="button" onClick={() => removeLineItem(index)} style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '18px' }}>
-                              🗑️
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-                <button type="button" onClick={addLineItem} style={{ background: '#e0e7ff', color: '#4338ca', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 600, fontSize: '12px' }}>
-                  + Add Another Item
-                </button>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                    <h4 style={{ fontSize: '13px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      Transfer Items
+                    </h4>
+                    <button 
+                      type="button" 
+                      onClick={addLineItem} 
+                      style={{ 
+                        background: '#eff6ff', 
+                        color: '#2563eb', 
+                        border: '1px solid #bfdbfe', 
+                        padding: '6px 14px', 
+                        borderRadius: '8px', 
+                        cursor: 'pointer', 
+                        fontWeight: 700, 
+                        fontSize: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                      }}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                        <path d="M12 5v14M5 12h14" />
+                      </svg>
+                      Add Another Item
+                    </button>
+                  </div>
 
-                <div className="inv-form-group" style={{ marginTop: '24px' }}>
-                  <label>Notes / Justification</label>
-                  <textarea className="inv-textarea" rows="2" value={formData.notes} onChange={e => setFormData({...formData, notes: e.target.value})} placeholder="Reason for transfer..." />
+                  <div className="inv-table-wrapper" style={{ borderRadius: '12px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
+                    <table className="inv-table" style={{ margin: 0 }}>
+                      <thead>
+                        <tr>
+                          <th style={{ width: '35%', background: '#f8fafc' }}>Item</th>
+                          <th style={{ width: '40%', background: '#f8fafc' }}>FIFO Batch (Available Qty)</th>
+                          <th style={{ width: '15%', background: '#f8fafc' }}>Qty</th>
+                          <th style={{ width: '10%', background: '#f8fafc' }}></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {formData.items.map((lineItem, index) => {
+                          const availableBatches = batches.filter(b => b.item_id === lineItem.item_id && b.branch_id === formData.from_branch_id && b.status === 'Active');
+                          return (
+                            <tr key={index}>
+                              <td>
+                                <Select
+                                  options={items.map(i => ({ value: i.id, label: i.item_name }))}
+                                  value={lineItem.item_id ? { value: lineItem.item_id, label: items.find(i => i.id === lineItem.item_id)?.item_name } : null}
+                                  onChange={(selected) => updateLineItem(index, 'item_id', selected ? selected.value : '')}
+                                  required
+                                  styles={selectStyles}
+                                  isDisabled={!formData.from_branch_id}
+                                />
+                              </td>
+                              <td>
+                                <Select
+                                  options={availableBatches.map(b => ({ value: b.id, label: `${b.batch_number} (Qty: ${b.quantity_available})` }))}
+                                  value={lineItem.batch_id ? { value: lineItem.batch_id, label: availableBatches.find(b => b.id === lineItem.batch_id)?.batch_number + ' (Qty: ' + availableBatches.find(b => b.id === lineItem.batch_id)?.quantity_available + ')' } : null}
+                                  onChange={(selected) => updateLineItem(index, 'batch_id', selected ? selected.value : '')}
+                                  required
+                                  styles={selectStyles}
+                                  isDisabled={!lineItem.item_id}
+                                  placeholder="Select Batch..."
+                                />
+                              </td>
+                              <td>
+                                <input 
+                                  type="number" 
+                                  className="sdm-input" 
+                                  style={{ padding: '8px' }}
+                                  min="1" 
+                                  required 
+                                  value={lineItem.quantity} 
+                                  onChange={(e) => updateLineItem(index, 'quantity', parseInt(e.target.value) || '')} 
+                                />
+                              </td>
+                              <td style={{ textAlign: 'center' }}>
+                                <button 
+                                  type="button" 
+                                  onClick={() => removeLineItem(index)} 
+                                  style={{ 
+                                    background: '#fef2f2', 
+                                    border: '1px solid #fee2e2', 
+                                    color: '#ef4444', 
+                                    cursor: 'pointer', 
+                                    width: '32px',
+                                    height: '32px',
+                                    borderRadius: '8px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    transition: 'all 0.2s'
+                                  }}
+                                  onMouseOver={(e) => e.currentTarget.style.background = '#fee2e2'}
+                                  onMouseOut={(e) => e.currentTarget.style.background = '#fef2f2'}
+                                >
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                    <path d="M3 6h18m-2 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+                                  </svg>
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div className="sdm-field">
+                  <label className="sdm-label">Notes / Justification</label>
+                  <textarea 
+                    className="sdm-input sdm-textarea" 
+                    value={formData.notes} 
+                    onChange={e => setFormData({...formData, notes: e.target.value})} 
+                    placeholder="Provide a reason for this transfer request..." 
+                  />
                 </div>
 
               </form>
             </div>
-            <div className="inv-drawer-footer">
-              <button type="button" className="action-btn" onClick={() => setIsDrawerOpen(false)} style={{padding: '10px 20px', color: 'var(--text-mid)'}}>Cancel</button>
-              <button type="submit" form="transfer-form" className="btn-primary">
+            
+            <div className="sdm-footer">
+              <button type="button" className="sdm-btn-cancel" onClick={() => setIsDrawerOpen(false)}>
+                Cancel
+              </button>
+              <button type="submit" form="transfer-form" className="sdm-btn-submit">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                  <path d="M20 6L9 17l-5-5" />
+                </svg>
                 Submit Request
               </button>
             </div>

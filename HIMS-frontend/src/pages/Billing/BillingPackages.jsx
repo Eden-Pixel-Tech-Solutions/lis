@@ -4,7 +4,7 @@ import { useAlert } from '../../hooks/useAlert';
 import '../../assets/CSS/PatientRegistration.css';
 import '../../assets/CSS/BillingPackages.css';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:7000';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://172.16.11.160:7005';
 
 const DEFAULT_ITEMS = [
   { name: 'Consultation Fee', amount: 0 },
@@ -380,51 +380,57 @@ function BillingPackages() {
 
         {/* ── Modal ── */}
         {showModal && (
-          <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setShowModal(false)}>
-            <div className="modal-container">
-              <div className="modal-header">
-                <h3>{editingPackage ? 'Edit Package' : 'Create Package'}</h3>
-                <button className="modal-close" onClick={() => setShowModal(false)}>×</button>
+          <div className="sdm-overlay" onClick={() => setShowModal(false)}>
+            <div className="sdm-modal" style={{ maxWidth: '660px' }} onClick={e => e.stopPropagation()}>
+              <div className="sdm-header">
+                <div className="sdm-header-accent"></div>
+                <h3 className="sdm-title">{editingPackage ? 'Edit Billing Package' : 'Create New Billing Package'}</h3>
+                <button className="sdm-close" onClick={() => setShowModal(false)}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
               </div>
 
-              <form onSubmit={handleSubmit} className="modal-body">
-                <div style={{ display: 'grid', gap: 16 }}>
+              <form onSubmit={handleSubmit}>
+                <div className="sdm-body">
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                    <div className="sdm-field">
+                      <label className="sdm-label">Package Name <span className="sdm-required">*</span></label>
+                      <input
+                        className="sdm-input"
+                        value={formData.name}
+                        onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                        placeholder="e.g., General Checkup"
+                        required
+                      />
+                    </div>
 
-                  <div className="preg-field">
-                    <label className="preg-label">Package Name *</label>
-                    <input
-                      className="preg-input"
-                      value={formData.name}
-                      onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                      placeholder="e.g., General Checkup"
-                      required
-                    />
+                    <div className="sdm-field">
+                      <label className="sdm-label">Department <span className="sdm-required">*</span></label>
+                      <select
+                        className="sdm-input"
+                        value={formData.department}
+                        onChange={e => setFormData(prev => ({ ...prev, department: e.target.value }))}
+                      >
+                        {departments.map(d => <option key={d} value={d}>{d}</option>)}
+                      </select>
+                    </div>
                   </div>
 
-                  <div className="preg-field">
-                    <label className="preg-label">Department *</label>
-                    <select
-                      className="preg-select"
-                      value={formData.department}
-                      onChange={e => setFormData(prev => ({ ...prev, department: e.target.value }))}
-                    >
-                      {departments.map(d => <option key={d} value={d}>{d}</option>)}
-                    </select>
-                  </div>
-
-                  <div className="preg-field">
-                    <label className="preg-label">Description</label>
+                  <div className="sdm-field">
+                    <label className="sdm-label">Description</label>
                     <textarea
-                      className="preg-textarea"
+                      className="sdm-input sdm-textarea"
                       value={formData.description}
                       onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                      placeholder="Brief description of the package..."
+                      placeholder="Brief description of the package contents..."
                       rows={2}
                     />
                   </div>
 
-                  <div>
-                    <label className="preg-label">Quick Add Items</label>
+                  <div className="sdm-field">
+                    <label className="sdm-label">Quick Add Medical Services</label>
                     <div className="quick-add-items">
                       {DEFAULT_ITEMS.map(item => (
                         <button
@@ -439,17 +445,21 @@ function BillingPackages() {
                     </div>
                   </div>
 
-                  <div>
-                    <label className="preg-label">Package Items *</label>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
+                  <div className="sdm-field">
+                    <label className="sdm-label">Detailed Package Items <span className="sdm-required">*</span></label>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 4 }}>
                       {formData.items.map((item, index) => (
                         <div key={index} className="item-row">
                           <input
-                            placeholder="Item name"
+                            className="sdm-input"
+                            style={{ flex: 2 }}
+                            placeholder="Service Name"
                             value={item.name}
                             onChange={e => handleItemChange(index, 'name', e.target.value)}
                           />
                           <input
+                            className="sdm-input"
+                            style={{ flex: 1 }}
                             type="number"
                             placeholder="Amount"
                             value={item.amount}
@@ -461,7 +471,7 @@ function BillingPackages() {
                             type="button"
                             className="remove-item-btn"
                             onClick={() => handleRemoveItem(index)}
-                            title="Remove item"
+                            title="Remove"
                           >
                             ×
                           </button>
@@ -472,49 +482,52 @@ function BillingPackages() {
                       type="button"
                       className="btn-ghost"
                       onClick={handleAddItem}
-                      style={{ marginTop: 8, fontSize: 13 }}
+                      style={{ marginTop: 8, fontSize: 13, borderStyle: 'dashed' }}
                     >
-                      + Add Custom Item
+                      + Add Another Custom Item
                     </button>
                   </div>
 
-                  <div className="preg-field">
-                    <label className="preg-label">Package Discount (%)</label>
-                    <input
-                      className="preg-input"
-                      type="number"
-                      min="0"
-                      max="100"
-                      value={formData.discountPercent}
-                      onChange={e =>
-                        setFormData(prev => ({ ...prev, discountPercent: parseFloat(e.target.value) || 0 }))
-                      }
-                    />
+                  <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 16, alignItems: 'end' }}>
+                    <div className="sdm-field">
+                      <label className="sdm-label">Package Discount (%)</label>
+                      <input
+                        className="sdm-input"
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={formData.discountPercent}
+                        onChange={e =>
+                          setFormData(prev => ({ ...prev, discountPercent: parseFloat(e.target.value) || 0 }))
+                        }
+                      />
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 14px', background: '#f8fafc', borderRadius: '10px', border: '1.5px solid #e2e8f0' }}>
+                      <input
+                        type="checkbox"
+                        id="isActive"
+                        checked={formData.isActive}
+                        onChange={e => setFormData(prev => ({ ...prev, isActive: e.target.checked }))}
+                        style={{ width: 16, height: 16, cursor: 'pointer' }}
+                      />
+                      <label htmlFor="isActive" style={{ cursor: 'pointer', fontSize: 13, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        Active
+                      </label>
+                    </div>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <input
-                      type="checkbox"
-                      id="isActive"
-                      checked={formData.isActive}
-                      onChange={e => setFormData(prev => ({ ...prev, isActive: e.target.checked }))}
-                    />
-                    <label htmlFor="isActive" style={{ cursor: 'pointer', fontSize: 13.5, fontWeight: 600, color: '#0f172a' }}>
-                      Active Package
-                    </label>
-                  </div>
-
-                  {/* Preview */}
-                  <div className="preview-card">
-                    <div className="preview-card-header">Package Preview</div>
+                  {/* Pricing Summary Preview */}
+                  <div className="preview-card" style={{ marginTop: 8 }}>
+                    <div className="preview-card-header">Pricing Summary</div>
                     <div className="preview-row">
-                      <span>Subtotal:</span>
-                      <span>₹{formData.items.reduce((sum, i) => sum + (i.amount || 0), 0).toFixed(2)}</span>
+                      <span>Subtotal (Sum of items)</span>
+                      <span style={{ fontFamily: 'var(--bp-mono)' }}>₹{formData.items.reduce((sum, i) => sum + (i.amount || 0), 0).toFixed(2)}</span>
                     </div>
                     {formData.discountPercent > 0 && (
-                      <div className="preview-row" style={{ color: 'var(--success)' }}>
-                        <span>Discount ({formData.discountPercent}%):</span>
-                        <span>
+                      <div className="preview-row" style={{ color: '#059669', background: '#ecfdf5', borderRadius: '6px', padding: '4px 8px', margin: '4px -8px' }}>
+                        <span>Applied Discount ({formData.discountPercent}%)</span>
+                        <span style={{ fontFamily: 'var(--bp-mono)' }}>
                           -₹{(
                             formData.items.reduce((sum, i) => sum + (i.amount || 0), 0) *
                             (formData.discountPercent / 100)
@@ -522,18 +535,21 @@ function BillingPackages() {
                         </span>
                       </div>
                     )}
-                    <div className="preview-total">
-                      <span>Total:</span>
-                      <span>₹{calculateTotal(formData.items, formData.discountPercent).toFixed(2)}</span>
+                    <div className="preview-total" style={{ borderTop: '2px solid #e2e8f0', paddingTop: '12px', marginTop: '8px' }}>
+                      <span style={{ fontWeight: 800 }}>Final Package Total</span>
+                      <span style={{ fontSize: '24px', color: '#2563eb', fontFamily: 'var(--bp-mono)' }}>₹{calculateTotal(formData.items, formData.discountPercent).toFixed(2)}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="modal-footer">
-                  <button type="button" className="btn-ghost" onClick={() => setShowModal(false)}>
+                <div className="sdm-footer">
+                  <button type="button" className="sdm-btn-cancel" onClick={() => setShowModal(false)}>
                     Cancel
                   </button>
-                  <button type="submit" className="btn-primary">
+                  <button type="submit" className="sdm-btn-submit">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
                     {editingPackage ? 'Update Package' : 'Create Package'}
                   </button>
                 </div>

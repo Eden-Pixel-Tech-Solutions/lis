@@ -52,7 +52,7 @@ function PatientRegistration() {
     if (!searchQuery.trim()) return;
     setIsSearching(true);
     try {
-      const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:7000';
+      const API_BASE = import.meta.env.VITE_API_URL || 'http://172.16.11.160:7005';
       const res = await fetch(`${API_BASE}/api/patients/search?q=${encodeURIComponent(searchQuery)}`);
       const result = await res.json();
 

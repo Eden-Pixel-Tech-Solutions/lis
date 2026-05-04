@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import '../../assets/CSS/Billings.css';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:7000';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://172.16.11.160:7005';
 
 function Billings({ regNo, bookingData, onFinish }) {
   const [patients, setPatients] = useState([]);

@@ -44,7 +44,7 @@ function HospitalInfra() {
   const fetchInfra = async () => {
     setLoading(true);
     try {
-      const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:7000';
+      const API_BASE = import.meta.env.VITE_API_URL || 'http://172.16.11.160:7005';
       const res = await fetch(`${API_BASE}/api/infra?type=${activeTab}`);
       const data = await res.json();
       if (data.success) setItems(data.items);
@@ -88,7 +88,7 @@ function HospitalInfra() {
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this facility?')) return;
     try {
-      const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:7000';
+      const API_BASE = import.meta.env.VITE_API_URL || 'http://172.16.11.160:7005';
       const res = await fetch(`${API_BASE}/api/infra/delete/${id}`, { method: 'DELETE' });
       const data = await res.json();
       if (data.success) fetchInfra();
@@ -96,7 +96,7 @@ function HospitalInfra() {
   };
 
   // ── Lab Machines Handlers ──
-  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:7000';
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://172.16.11.160:7005';
 
   const openMachinesModal = async (lab) => {
     setSelectedLab(lab);
@@ -167,7 +167,7 @@ function HospitalInfra() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:7000';
+    const API_BASE = import.meta.env.VITE_API_URL || 'http://172.16.11.160:7005';
     const url = editingItem
       ? `${API_BASE}/api/infra/update/${editingItem.id}`
       : `${API_BASE}/api/infra/add`;
@@ -201,16 +201,18 @@ function HospitalInfra() {
       )}
       <div className="infra-page">
         <div className="infra-header">
-          <div>
+          <div className="infra-title-box">
             <h1>Hospital Infrastructure</h1>
             <p>Manage facility types, floor locations, and current availability</p>
           </div>
-          <button className="btn-primary" onClick={handleOpenAdd}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-            Add New {activeTab}
-          </button>
+          <div className="infra-header-actions">
+            <button className="btn-primary" onClick={handleOpenAdd}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              Add New {activeTab}
+            </button>
+          </div>
         </div>
 
         <div className="infra-tabs">

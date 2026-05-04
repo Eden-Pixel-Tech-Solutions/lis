@@ -73,7 +73,7 @@ function Register() {
   useEffect(() => {
     const fetchBranches = async () => {
       try {
-        const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:7000';
+        const API_BASE = import.meta.env.VITE_API_URL || 'http://172.16.11.160:7005';
         const res = await fetch(`${API_BASE}/api/branches`);
         const data = await res.json();
         if (data.success) {
@@ -141,7 +141,7 @@ function Register() {
 
     setLoading(true);
     try {
-      const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:7000';
+      const API_BASE = import.meta.env.VITE_API_URL || 'http://172.16.11.160:7005';
       const response = await fetch(`${API_BASE}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

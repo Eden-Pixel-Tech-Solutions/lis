@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import JsBarcode from 'jsbarcode';
 import '../../assets/CSS/LabWorklist.css';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:7000';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://172.16.11.160:7005';
 
 const DEPARTMENTS = [
   { id: 'all', name: 'All Departments', icon: '🏥' },
@@ -291,18 +291,18 @@ export default function LabWorklist() {
   return (
     <div className="lab-worklist-page">
       {/* Header */}
-      <div className="worklist-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="worklist-header">
         <div>
           <h1>🧪 Laboratory Worklist & Sample Collection</h1>
           <p>Select department to view pending tests</p>
         </div>
         {(userRole === 'Central' || userRole === 'Sub-Central') && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <label style={{ fontWeight: 'bold', color: 'var(--text-color)' }}>View Network Branch:</label>
+          <div className="branch-selector-wrapper">
+            <label>View Network Branch:</label>
             <select 
               value={selectedBranch} 
               onChange={(e) => setSelectedBranch(e.target.value)}
-              style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '14px' }}
+              className="branch-select"
             >
               <option value="all">All Branches</option>
               {branches.map(b => (
@@ -332,34 +332,24 @@ export default function LabWorklist() {
 
       {/* Now Serving Banner */}
       {!loading && worklist.length > 0 && (
-        <div className="now-serving-banner" style={{
-          background: 'linear-gradient(135deg, var(--brand-blue) 0%, #3b82f6 100%)',
-          color: 'white',
-          padding: '24px',
-          borderRadius: 'var(--radius-lg)',
-          marginTop: '24px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          boxShadow: 'var(--shadow-md)'
-        }}>
-          <div>
-            <h2 style={{ margin: '0 0 8px 0', fontSize: '18px', opacity: 0.9 }}>Next Patient to Call</h2>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '16px' }}>
-              <span style={{ fontSize: '36px', fontWeight: 'bold' }}>
+        <div className="now-serving-banner">
+          <div className="now-serving-info">
+            <h2>Next Patient to Call</h2>
+            <div className="now-serving-patient">
+              <span className="token-badge">
                 Token #{(() => {
                   const firstPending = worklist.find(w => w.status === 'Pending') || worklist[0];
                   return firstPending.lab_queue_number || 1;
                 })()}
               </span>
-              <span style={{ fontSize: '24px' }}>
+              <span className="patient-name-large">
                 {(worklist.find(w => w.status === 'Pending') || worklist[0]).patient_name}
               </span>
             </div>
           </div>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '14px', opacity: 0.9 }}>Total Pending</div>
-            <div style={{ fontSize: '28px', fontWeight: 'bold' }}>
+          <div className="total-pending-box">
+            <div className="pending-label">Total Pending</div>
+            <div className="pending-count">
               {worklist.filter(w => w.status === 'Pending').length}
             </div>
           </div>
@@ -373,10 +363,9 @@ export default function LabWorklist() {
             {getDepartmentName(selectedDepartment)} Worklist
             <span className="count-badge">{worklist.length} pending</span>
           </h3>
-          <div style={{ display: 'flex', gap: '12px' }}>
+          <div className="worklist-actions">
             <button
-              className="btn-primary"
-              style={{ background: '#10b981', borderColor: '#10b981' }}
+              className="btn-primary tv-mode-btn"
               onClick={() => window.open('/lab-tv', '_blank')}
             >
               📺 Open TV Mode

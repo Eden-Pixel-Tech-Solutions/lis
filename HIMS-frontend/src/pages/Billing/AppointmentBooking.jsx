@@ -4,7 +4,7 @@ import Alert from '../../components/Alert';
 import { useAlert } from '../../hooks/useAlert';
 import '../../assets/CSS/PatientRegistration.css';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:7000';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://172.16.11.160:7005';
 
 function AppointmentBooking({ regNo, onSaveSuccess }) {
   const { alert, showAlert, hideAlert } = useAlert();
@@ -731,6 +731,7 @@ function AppointmentBooking({ regNo, onSaveSuccess }) {
             </div>
 
             <div className="search-results-container" style={{ minHeight: '200px' }}>
+            <div className="machine-table-wrapper">
               {searchResults.length > 0 ? (
                 <table className="search-results-table">
                   <thead>
@@ -774,6 +775,7 @@ function AppointmentBooking({ regNo, onSaveSuccess }) {
                   {isSearching ? 'Searching duty rosters...' : 'No doctors found on duty for the selected criteria.'}
                 </div>
               )}
+            </div>
             </div>
           </div>
         </div>

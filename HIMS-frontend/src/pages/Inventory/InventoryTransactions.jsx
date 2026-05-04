@@ -5,7 +5,7 @@ import Select from 'react-select';
 import { appendBranchContext } from '../../utils/branchContext';
 import '../../assets/CSS/InventoryVendors.css'; // Reusing glassmorphic CSS
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:7005';
+const API_URL = import.meta.env.VITE_API_URL || 'http://172.16.11.160:7005';
 
 function InventoryTransactions() {
   const { alert, showAlert, hideAlert } = useAlert();
@@ -171,15 +171,14 @@ function InventoryTransactions() {
       {alert && <Alert type={alert.type} message={alert.message} onClose={hideAlert} />}
       
       <div className="inv-header">
-        <div>
+        <div className="inv-title-box">
           <h1 className="inv-title">Stock Ledger & Transactions</h1>
           <p className="inv-subtitle">The ultimate source of truth for all stock movements</p>
         </div>
-        <div style={{ display: 'flex', gap: '10px' }}>
+        <div className="inv-header-actions">
           <button 
-            className="btn-primary" 
+            className="btn-primary export-btn" 
             onClick={handleExportCSV}
-            style={{ background: '#10b981', borderColor: '#10b981' }}
           >
             📥 Export CSV
           </button>
@@ -190,10 +189,10 @@ function InventoryTransactions() {
       </div>
 
       <div className="inv-card">
-        <div className="inv-toolbar" style={{ justifyContent: 'flex-end', gap: '10px' }}>
+        <div className="inv-toolbar txn-toolbar">
           <select 
             className="inv-select" 
-            style={{ width: '180px', background: 'var(--bg-white)' }}
+            style={{ background: 'var(--bg-white)' }}
             value={branchFilter}
             onChange={(e) => setBranchFilter(e.target.value)}
           >
@@ -205,7 +204,7 @@ function InventoryTransactions() {
 
           <select 
             className="inv-select" 
-            style={{ width: '200px', background: 'var(--bg-white)' }}
+            style={{ background: 'var(--bg-white)' }}
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
           >
@@ -216,77 +215,79 @@ function InventoryTransactions() {
           </select>
         </div>
 
-        <table className="inv-table">
-          <thead>
-            <tr>
-              <th>Date / Time</th>
-              <th>Branch</th>
-              <th>Item Details</th>
-              <th>Batch</th>
-              <th>Type</th>
-              <th>Quantity</th>
-              <th>Audit Trail</th>
-              <th>Reference & Remarks</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr><td colSpan="6" style={{textAlign: 'center'}}>Loading ledger...</td></tr>
-            ) : transactions.length === 0 ? (
-              <tr><td colSpan="6" style={{textAlign: 'center'}}>No transactions found.</td></tr>
-            ) : (
-              transactions.map(txn => (
-                <tr key={txn.id}>
-                  <td>
-                    <div style={{fontWeight: 600, color: 'var(--text-dark)'}}>
-                      {new Date(txn.created_at).toLocaleDateString()}
-                    </div>
-                    <div style={{fontSize: '12px', color: 'var(--text-soft)'}}>
-                      {new Date(txn.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                    </div>
-                  </td>
-                  <td>
-                    <span style={{background: '#f1f5f9', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 600, color: '#475569'}}>
-                      {txn.branch_name || 'Main'}
-                    </span>
-                  </td>
-                  <td>
-                    <div style={{fontWeight: 600, color: 'var(--text-dark)'}}>{txn.item_name}</div>
-                    <div style={{fontSize: '12px', color: 'var(--text-soft)'}}>{txn.item_code}</div>
-                  </td>
-                  <td><strong>{txn.batch_number}</strong></td>
-                  <td>
-                    <span style={{
-                      padding: '4px 10px', borderRadius: '4px', fontSize: '12px', fontWeight: 600,
-                      background: txn.type === 'IN' ? '#ecfdf5' : txn.type === 'OUT' ? '#fef2f2' : '#fefce8',
-                      color: txn.type === 'IN' ? '#059669' : txn.type === 'OUT' ? '#dc2626' : '#ca8a04'
-                    }}>
-                      {txn.type}
-                    </span>
-                  </td>
-                  <td>
-                    <div style={{fontSize: '16px', fontWeight: 600}}>
-                      {txn.type === 'IN' ? '+' : txn.type === 'OUT' ? '-' : ''}{txn.quantity} <span style={{fontSize: '12px', fontWeight: 400}}>{txn.unit}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div style={{fontSize: '13px', fontWeight: 600, color: 'var(--text-dark)'}}>
-                      <span style={{color: 'var(--text-soft)', fontWeight: 'normal'}}>By: </span>
-                      {txn.first_name ? `${txn.first_name} ${txn.last_name || ''}` : 'System Auto'}
-                    </div>
-                  </td>
-                  <td>
-                    <div style={{color: 'var(--text-dark)', fontWeight: 600}}>
-                      {txn.reference_type === 'Test' && txn.test_name ? `Test: ${txn.test_name}` : txn.reference_type}
-                    </div>
-                    {txn.reference_id && <div style={{fontSize: '12px', color: 'var(--blue-primary)'}}>Ref: {txn.reference_id}</div>}
-                    {txn.remarks && <div style={{fontSize: '12px', color: 'var(--text-soft)', fontStyle: 'italic'}}>{txn.remarks}</div>}
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+        <div className="inv-table-wrapper">
+          <table className="inv-table">
+            <thead>
+              <tr>
+                <th>Date / Time</th>
+                <th>Branch</th>
+                <th>Item Details</th>
+                <th>Batch</th>
+                <th>Type</th>
+                <th>Quantity</th>
+                <th>Audit Trail</th>
+                <th>Reference & Remarks</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr><td colSpan="8" style={{textAlign: 'center'}}>Loading ledger...</td></tr>
+              ) : transactions.length === 0 ? (
+                <tr><td colSpan="8" style={{textAlign: 'center'}}>No transactions found.</td></tr>
+              ) : (
+                transactions.map(txn => (
+                  <tr key={txn.id}>
+                    <td>
+                      <div style={{fontWeight: 600, color: 'var(--text-dark)'}}>
+                        {new Date(txn.created_at).toLocaleDateString()}
+                      </div>
+                      <div style={{fontSize: '12px', color: 'var(--text-soft)'}}>
+                        {new Date(txn.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                      </div>
+                    </td>
+                    <td>
+                      <span style={{background: '#f1f5f9', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 600, color: '#475569'}}>
+                        {txn.branch_name || 'Main'}
+                      </span>
+                    </td>
+                    <td>
+                      <div style={{fontWeight: 600, color: 'var(--text-dark)'}}>{txn.item_name}</div>
+                      <div style={{fontSize: '12px', color: 'var(--text-soft)'}}>{txn.item_code}</div>
+                    </td>
+                    <td><strong>{txn.batch_number}</strong></td>
+                    <td>
+                      <span style={{
+                        padding: '4px 10px', borderRadius: '4px', fontSize: '12px', fontWeight: 600,
+                        background: txn.type === 'IN' ? '#ecfdf5' : txn.type === 'OUT' ? '#fef2f2' : '#fefce8',
+                        color: txn.type === 'IN' ? '#059669' : txn.type === 'OUT' ? '#dc2626' : '#ca8a04'
+                      }}>
+                        {txn.type}
+                      </span>
+                    </td>
+                    <td>
+                      <div style={{fontSize: '16px', fontWeight: 600}}>
+                        {txn.type === 'IN' ? '+' : txn.type === 'OUT' ? '-' : ''}{txn.quantity} <span style={{fontSize: '12px', fontWeight: 400}}>{txn.unit}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div style={{fontSize: '13px', fontWeight: 600, color: 'var(--text-dark)'}}>
+                        <span style={{color: 'var(--text-soft)', fontWeight: 'normal'}}>By: </span>
+                        {txn.first_name ? `${txn.first_name} ${txn.last_name || ''}` : 'System Auto'}
+                      </div>
+                    </td>
+                    <td>
+                      <div style={{color: 'var(--text-dark)', fontWeight: 600}}>
+                        {txn.reference_type === 'Test' && txn.test_name ? `Test: ${txn.test_name}` : txn.reference_type}
+                      </div>
+                      {txn.reference_id && <div style={{fontSize: '12px', color: 'var(--blue-primary)'}}>Ref: {txn.reference_id}</div>}
+                      {txn.remarks && <div style={{fontSize: '12px', color: 'var(--text-soft)', fontStyle: 'italic'}}>{txn.remarks}</div>}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Sliding Drawer Modal */}

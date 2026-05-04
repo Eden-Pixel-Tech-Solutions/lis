@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:7000';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://172.16.11.160:7005';
 
 const statusColors = {
   Paid:    { bg: '#dcfce7', color: '#166534', dot: '#16a34a' },

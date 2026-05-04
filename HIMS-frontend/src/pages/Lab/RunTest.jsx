@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import '../../assets/CSS/LabVerification.css'; // Reuse same styles
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:7000';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://172.16.11.160:7005';
 
 const RunTest = () => {
   const [tests, setTests] = useState([]);

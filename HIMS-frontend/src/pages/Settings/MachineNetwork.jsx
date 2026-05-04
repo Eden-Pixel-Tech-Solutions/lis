@@ -150,11 +150,11 @@ const MachineNetwork = () => {
           <h1>Machine Network Monitor</h1>
           <p>Real-time status of laboratory analyzers across all branches</p>
         </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <button className="btn-primary" onClick={exportAllAnalyzers} style={{ padding: '8px 16px', borderRadius: '8px', border: 'none', background: '#10b981', color: 'white', fontWeight: 'bold', cursor: 'pointer' }}>
+        <div className="machine-header-actions">
+          <button className="btn-primary" onClick={exportAllAnalyzers} style={{ background: '#10b981', color: 'white' }}>
             📥 Export All Analyzers
           </button>
-          <button className="btn-primary" onClick={() => window.location.reload()} style={{ padding: '8px 16px', borderRadius: '8px', border: 'none', background: 'var(--brand-blue)', color: 'white', fontWeight: 'bold', cursor: 'pointer' }}>
+          <button className="btn-primary" onClick={() => window.location.reload()}>
             Refresh Data
           </button>
         </div>
@@ -192,43 +192,46 @@ const MachineNetwork = () => {
                 📥 Branch CSV
               </button>
             </div>
-            <table className="machine-table">
-              <thead>
-                <tr>
-                  <th>Machine ID</th>
-                  <th>Model Name</th>
-                  <th>Analyzer Type</th>
-                  <th>Status</th>
-                  <th>Tests Done (24h)</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {branch.machines.map(machine => (
-                  <tr key={machine.id}>
-                    <td style={{ fontWeight: 'bold' }}>{machine.id}</td>
-                    <td>{machine.name}</td>
-                    <td>{machine.type}</td>
-                    <td>
-                      <span className={`status-badge status-${machine.status.toLowerCase()}`}>
-                        {machine.status}
-                      </span>
-                    </td>
-                    <td style={{ fontWeight: 'bold', color: 'var(--text-main)' }}>
-                      {machine.testsDone.toLocaleString()}
-                    </td>
-                    <td>
-                      <button 
-                        onClick={() => handleOpenSupport(machine, branch.branchName)}
-                        style={{ background: 'var(--blue-pale)', color: 'var(--blue-primary)', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', transition: '0.2s' }}
-                      >
-                        Create Support
-                      </button>
-                    </td>
+            <div className="machine-table-wrapper">
+              <table className="machine-table">
+                <thead>
+                  <tr>
+                    <th>Machine ID</th>
+                    <th>Model Name</th>
+                    <th>Analyzer Type</th>
+                    <th>Status</th>
+                    <th>Tests Done (24h)</th>
+                    <th>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {branch.machines.map(machine => (
+                    <tr key={machine.id}>
+                      <td style={{ fontWeight: 'bold' }}>{machine.id}</td>
+                      <td>{machine.name}</td>
+                      <td>{machine.type}</td>
+                      <td>
+                        <span className={`status-badge status-${machine.status.toLowerCase()}`}>
+                          {machine.status}
+                        </span>
+                      </td>
+                      <td style={{ fontWeight: 'bold', color: 'var(--text-main)' }}>
+                        {machine.testsDone.toLocaleString()}
+                      </td>
+                      <td>
+                        <button 
+                          onClick={() => handleOpenSupport(machine, branch.branchName)}
+                          className="btn-support-sm"
+                          style={{ background: 'var(--blue-pale)', color: 'var(--blue-primary)', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer' }}
+                        >
+                          Create Support
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         ))}
       </div>
@@ -245,44 +248,46 @@ const MachineNetwork = () => {
           </button>
         </div>
         
-        {supportLogs.length > 0 ? (
-          <table className="machine-table">
-            <thead>
-              <tr>
-                <th>Ticket ID</th>
-                <th>Date</th>
-                <th>Branch</th>
-                <th>Machine</th>
-                <th>Category</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {supportLogs.map(log => (
-                <tr key={log.id}>
-                  <td style={{ fontWeight: 'bold' }}>{log.id}</td>
-                  <td>{log.date}</td>
-                  <td>{log.branch}</td>
-                  <td>{log.machineId} - {log.machineName}</td>
-                  <td>{log.category}</td>
-                  <td>
-                    <span style={{ 
-                      padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 'bold',
-                      background: log.status === 'Open' ? '#fee2e2' : '#fef3c7',
-                      color: log.status === 'Open' ? '#991b1b' : '#92400e'
-                    }}>
-                      {log.status}
-                    </span>
-                  </td>
+        <div className="machine-table-wrapper">
+          {supportLogs.length > 0 ? (
+            <table className="machine-table">
+              <thead>
+                <tr>
+                  <th>Ticket ID</th>
+                  <th>Date</th>
+                  <th>Branch</th>
+                  <th>Machine</th>
+                  <th>Category</th>
+                  <th>Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <div style={{ textAlign: 'center', padding: '24px', background: '#f8fafc', borderRadius: '8px', color: 'var(--text-soft)' }}>
-            No support tickets created yet.
-          </div>
-        )}
+              </thead>
+              <tbody>
+                {supportLogs.map(log => (
+                  <tr key={log.id}>
+                    <td style={{ fontWeight: 'bold' }}>{log.id}</td>
+                    <td>{log.date}</td>
+                    <td>{log.branch}</td>
+                    <td>{log.machineId} - {log.machineName}</td>
+                    <td>{log.category}</td>
+                    <td>
+                      <span style={{ 
+                        padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 'bold',
+                        background: log.status === 'Open' ? '#fee2e2' : '#fef3c7',
+                        color: log.status === 'Open' ? '#991b1b' : '#92400e'
+                      }}>
+                        {log.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div style={{ textAlign: 'center', padding: '24px', background: '#f8fafc', borderRadius: '8px', color: 'var(--text-soft)' }}>
+              No support tickets created yet.
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Support Modal */}

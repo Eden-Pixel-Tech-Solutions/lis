@@ -5,7 +5,7 @@ import { useAlert } from '../../hooks/useAlert';
 import JsBarcode from 'jsbarcode';
 import '../../assets/CSS/PatientRegistration.css';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:7000';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://172.16.11.160:7005';
 
 const QRPlaceholder = ({ value, size = 120 }) => (
   <svg width={size} height={size} viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg"

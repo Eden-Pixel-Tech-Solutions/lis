@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Alert from '../../components/Alert';
 import { useAlert } from '../../hooks/useAlert';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:7005';
+const API_URL = import.meta.env.VITE_API_URL || 'http://172.16.11.160:7005';
 
 function Settings() {
   const { alert, showAlert, hideAlert } = useAlert();

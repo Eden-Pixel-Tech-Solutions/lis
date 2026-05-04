@@ -3,7 +3,7 @@ import Alert from '../../components/Alert';
 import { useAlert } from '../../hooks/useAlert';
 import '../../assets/CSS/InventoryVendors.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:7005'; // Backend port is 7005 as per .env
+const API_URL = import.meta.env.VITE_API_URL || 'http://172.16.11.160:7005'; // Backend port is 7005 as per .env
 
 function InventoryVendors() {
   const { alert, showAlert, hideAlert } = useAlert();
